@@ -330,6 +330,12 @@ BEGIN {
 		JobName=$8
 		Partition=$9
 		GRES=$10
+		split(GRES, arrGRES, ":")
+		if (UsedGRES[NodeList] == "" && arrGRES[2]!=0) {
+			UsedGRES[NodeList]=arrGRES[2]
+		} else if (arrGRES[2]!=0) {
+			UsedGRES[NodeList]+=arrGRES[2]
+		}
 		# Select job information to be printed for this job
 		JobInfo = JobId " " User " "
 		if (printgres == 1) JobInfo = JobInfo GRES " "
@@ -409,7 +415,7 @@ BEGIN {
 	# Use the threads per CPU core to calculate "permissible" min/max CPU load:
 	threadspercore=$8
 	# Generic resources (GRES) associated with the node
-	nodegres=$9
+	nodegres=sprintf("%s:%s", $9, UsedGRES[node])
 
 	# Select only subset of nodes with certain values/states
 	listnode = printallnodes
